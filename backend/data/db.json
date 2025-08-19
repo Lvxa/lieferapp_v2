@@ -1,0 +1,545 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "passwordHash": "$2a$10$9cPlGv4Wk0iRCQp3fQh0Je7eVYw3oZe7nqKxLtWb9e9b0c2KxVgdu",
+      "role": "admin",
+      "standort": null,
+      "password": "admin123"
+    },
+    {
+      "id": 2,
+      "username": "lieferant",
+      "passwordHash": "$2a$10$Zt1bG3q2w.9C9qf7qKkZdeqQm8nqj0A8c3w0xB9ZtQ7g8j6n9pVga",
+      "role": "lieferant",
+      "standort": null,
+      "password": "lieferant123"
+    },
+    {
+      "id": 3,
+      "username": "Schlossplatz",
+      "passwordHash": "$2a$10$1r8K3l9Qv7pZc1Rj5bNQ4u1E3yZzJ8qA7h2k9mL3pR6s1Y2tV0E8.",
+      "role": "bierbude",
+      "standort": "Schlossplatz",
+      "password": "bude123"
+    },
+    {
+      "id": 4,
+      "username": "Abreiteplatz",
+      "passwordHash": "$2a$10$1r8K3l9Qv7pZc1Rj5bNQ4u1E3yZzJ8qA7h2k9mL3pR6s1Y2tV0E8.",
+      "role": "bierbude",
+      "standort": "Abreiteplatz",
+      "password": "bude123"
+    },
+    {
+      "id": 5,
+      "username": "Plateu",
+      "passwordHash": "$2a$10$1r8K3l9Qv7pZc1Rj5bNQ4u1E3yZzJ8qA7h2k9mL3pR6s1Y2tV0E8.",
+      "role": "bierbude",
+      "standort": "Plateu",
+      "password": "bude123"
+    }
+  ],
+  "stands": [
+    {
+      "id": 1,
+      "code": "bude1",
+      "name": "Schlossplatz",
+      "type": "bierbude"
+    },
+    {
+      "id": 2,
+      "code": "bude2",
+      "name": "Abreiteplatz",
+      "type": "bierbude"
+    },
+    {
+      "id": 3,
+      "code": "bude3",
+      "name": "Plateu",
+      "type": "bierbude"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Brinkhofs Keg",
+      "category": "bier",
+      "price": 4.5,
+      "minStock": 10,
+      "barcode": "PILS05",
+      "stock": 64,
+      "isActive": true,
+      "size": 0.33
+    },
+    {
+      "id": 2,
+      "name": "Schöfferhofer Weizen",
+      "category": "bier",
+      "price": 3,
+      "minStock": 10,
+      "barcode": "WEIZ05",
+      "stock": 75,
+      "isActive": true
+    },
+    {
+      "id": 3,
+      "name": "Wasser Sprudel",
+      "category": "wasser",
+      "price": 1,
+      "minStock": 20,
+      "barcode": "WASS05",
+      "stock": 109,
+      "isActive": true
+    },
+    {
+      "id": 4,
+      "name": "Coca Cola",
+      "category": "softdrinks",
+      "price": 2,
+      "minStock": 15,
+      "barcode": "COLA033",
+      "stock": 74,
+      "isActive": true
+    },
+    {
+      "id": 5,
+      "name": "Coca Cola Zero",
+      "category": "softdrinks",
+      "price": 3.5,
+      "minStock": 0,
+      "barcode": "-",
+      "stock": 40,
+      "isActive": true
+    },
+    {
+      "id": 6,
+      "name": "Mezzo Mix",
+      "category": "softdrinks",
+      "price": 3.5,
+      "minStock": 0,
+      "barcode": "-",
+      "stock": 40,
+      "isActive": true
+    },
+    {
+      "id": 7,
+      "name": "Fanta",
+      "category": "softdrinks",
+      "price": 3.5,
+      "minStock": 0,
+      "barcode": "-",
+      "stock": 40,
+      "isActive": true
+    },
+    {
+      "id": 8,
+      "name": "Sprite",
+      "category": "softdrinks",
+      "price": 3.5,
+      "minStock": 0,
+      "barcode": "-",
+      "stock": 40,
+      "isActive": true
+    },
+    {
+      "id": 9,
+      "name": "Wasser ohne Sprudel",
+      "category": "softdrinks",
+      "price": 3.5,
+      "minStock": 0,
+      "barcode": "-",
+      "stock": 50,
+      "isActive": true
+    },
+    {
+      "id": 10,
+      "name": "Apfelschorle",
+      "category": "softdrinks",
+      "price": 3.5,
+      "minStock": 0,
+      "barcode": "-",
+      "stock": 51,
+      "isActive": true
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "standort": "bude1",
+      "items": [
+        {
+          "productId": 1,
+          "quantity": 3,
+          "priceAtOrder": 2.5
+        }
+      ],
+      "total": 7.5,
+      "status": "rejected",
+      "deliveryTime": null,
+      "notes": null,
+      "createdBy": "admin",
+      "createdAt": "2025-08-15T18:35:16.755Z",
+      "updatedAt": "2025-08-15T19:25:04.140Z"
+    },
+    {
+      "id": 2,
+      "standort": "bude1",
+      "items": [
+        {
+          "productId": 1,
+          "quantity": 3,
+          "priceAtOrder": 2.5
+        }
+      ],
+      "total": 7.5,
+      "status": "rejected",
+      "deliveryTime": null,
+      "notes": null,
+      "createdBy": "admin",
+      "createdAt": "2025-08-15T18:35:26.290Z",
+      "updatedAt": "2025-08-15T19:25:02.690Z"
+    },
+    {
+      "id": 3,
+      "standort": "bude1",
+      "items": [
+        {
+          "productId": 1,
+          "quantity": 2,
+          "priceAtOrder": 2.5
+        }
+      ],
+      "total": 5,
+      "status": "rejected",
+      "deliveryTime": null,
+      "notes": null,
+      "createdBy": "admin",
+      "createdAt": "2025-08-15T19:11:55.910Z",
+      "updatedAt": "2025-08-15T19:25:01.140Z"
+    },
+    {
+      "id": 4,
+      "standort": "bude1",
+      "items": [
+        {
+          "productId": 2,
+          "quantity": 1,
+          "priceAtOrder": 3
+        }
+      ],
+      "total": 3,
+      "status": "rejected",
+      "deliveryTime": null,
+      "notes": null,
+      "createdBy": "admin",
+      "createdAt": "2025-08-15T19:21:01.043Z",
+      "updatedAt": "2025-08-15T19:24:59.907Z"
+    },
+    {
+      "id": 5,
+      "standort": "bude1",
+      "items": [
+        {
+          "productId": 1,
+          "quantity": 1,
+          "priceAtOrder": 2.5
+        }
+      ],
+      "total": 2.5,
+      "status": "delivered",
+      "deliveryTime": null,
+      "notes": null,
+      "createdBy": "admin",
+      "createdAt": "2025-08-15T19:24:52.524Z",
+      "updatedAt": "2025-08-18T18:32:41.261Z"
+    },
+    {
+      "id": 6,
+      "standort": "bude1",
+      "items": [
+        {
+          "productId": 1,
+          "quantity": 3,
+          "priceAtOrder": 2.5
+        }
+      ],
+      "total": 7.5,
+      "status": "delivered",
+      "deliveryTime": null,
+      "notes": null,
+      "createdBy": "bude1",
+      "createdAt": "2025-08-15T19:35:54.254Z",
+      "updatedAt": "2025-08-15T19:36:05.736Z"
+    },
+    {
+      "id": 7,
+      "standort": "bude1",
+      "items": [
+        {
+          "productId": 1,
+          "quantity": 3,
+          "priceAtOrder": 2.5
+        }
+      ],
+      "total": 7.5,
+      "status": "rejected",
+      "deliveryTime": null,
+      "notes": null,
+      "createdBy": "admin",
+      "createdAt": "2025-08-18T18:17:06.513Z",
+      "updatedAt": "2025-08-18T18:17:54.386Z"
+    },
+    {
+      "id": 8,
+      "standort": "bude2",
+      "items": [
+        {
+          "productId": 1,
+          "quantity": 3,
+          "priceAtOrder": 2.5
+        }
+      ],
+      "total": 7.5,
+      "status": "rejected",
+      "deliveryTime": null,
+      "notes": null,
+      "createdBy": "admin",
+      "createdAt": "2025-08-18T18:17:16.850Z",
+      "updatedAt": "2025-08-18T18:17:53.333Z"
+    },
+    {
+      "id": 9,
+      "standort": "bude3",
+      "items": [
+        {
+          "productId": 1,
+          "quantity": 3,
+          "priceAtOrder": 2.5
+        }
+      ],
+      "total": 7.5,
+      "status": "rejected",
+      "deliveryTime": null,
+      "notes": null,
+      "createdBy": "admin",
+      "createdAt": "2025-08-18T18:17:49.499Z",
+      "updatedAt": "2025-08-18T18:17:52.434Z"
+    },
+    {
+      "id": 10,
+      "standort": "bude3",
+      "items": [
+        {
+          "productId": 4,
+          "quantity": 2,
+          "priceAtOrder": 2
+        }
+      ],
+      "total": 4,
+      "status": "delivered",
+      "deliveryTime": null,
+      "notes": "Hallo Ich bin ein Test",
+      "createdBy": "admin",
+      "createdAt": "2025-08-18T18:31:56.332Z",
+      "updatedAt": "2025-08-18T18:32:05.132Z"
+    },
+    {
+      "id": 11,
+      "standort": "bude3",
+      "items": [
+        {
+          "productId": 3,
+          "quantity": 1,
+          "priceAtOrder": 1
+        }
+      ],
+      "total": 1,
+      "status": "delivered",
+      "deliveryTime": null,
+      "notes": "Test",
+      "createdBy": "admin",
+      "createdAt": "2025-08-18T18:33:01.579Z",
+      "updatedAt": "2025-08-18T18:33:21.478Z"
+    },
+    {
+      "id": 12,
+      "standort": "bude1",
+      "items": [
+        {
+          "productId": 5,
+          "quantity": 3,
+          "priceAtOrder": 3.5
+        }
+      ],
+      "total": 10.5,
+      "status": "delivered",
+      "deliveryTime": null,
+      "notes": null,
+      "createdBy": "admin",
+      "createdAt": "2025-08-18T18:36:50.763Z",
+      "updatedAt": "2025-08-18T18:36:58.861Z"
+    },
+    {
+      "id": 13,
+      "standort": "bude3",
+      "items": [
+        {
+          "productId": 10,
+          "quantity": 5,
+          "priceAtOrder": 3.5
+        }
+      ],
+      "total": 17.5,
+      "status": "delivered",
+      "deliveryTime": null,
+      "notes": "Ich will Apfelschorle",
+      "createdBy": "admin",
+      "createdAt": "2025-08-18T18:52:41.256Z",
+      "updatedAt": "2025-08-18T18:52:48.439Z"
+    },
+    {
+      "id": 14,
+      "standort": "bude1",
+      "items": [
+        {
+          "productId": 1,
+          "quantity": 4,
+          "priceAtOrder": 4.5
+        }
+      ],
+      "total": 18,
+      "status": "delivered",
+      "deliveryTime": null,
+      "notes": null,
+      "createdBy": "admin",
+      "createdAt": "2025-08-18T18:55:17.175Z",
+      "updatedAt": "2025-08-18T18:55:22.022Z"
+    },
+    {
+      "id": 15,
+      "standort": "bude1",
+      "items": [
+        {
+          "productId": 4,
+          "quantity": 3,
+          "priceAtOrder": 2
+        }
+      ],
+      "total": 6,
+      "status": "delivered",
+      "deliveryTime": null,
+      "notes": null,
+      "createdBy": "admin",
+      "createdAt": "2025-08-18T19:00:33.878Z",
+      "updatedAt": "2025-08-18T19:00:39.906Z"
+    },
+    {
+      "id": 16,
+      "standort": "bude3",
+      "items": [
+        {
+          "productId": 9,
+          "quantity": 6,
+          "priceAtOrder": 3.5
+        }
+      ],
+      "total": 21,
+      "status": "delivered",
+      "deliveryTime": null,
+      "notes": null,
+      "createdBy": "admin",
+      "createdAt": "2025-08-18T19:12:59.892Z",
+      "updatedAt": "2025-08-18T19:13:03.751Z"
+    },
+    {
+      "id": 17,
+      "standort": "bude3",
+      "items": [
+        {
+          "productId": 1,
+          "quantity": 4,
+          "priceAtOrder": 4.5
+        }
+      ],
+      "total": 18,
+      "status": "rejected",
+      "deliveryTime": null,
+      "notes": null,
+      "createdBy": "admin",
+      "createdAt": "2025-08-18T19:47:49.384Z",
+      "updatedAt": "2025-08-18T19:48:01.930Z"
+    },
+    {
+      "id": 18,
+      "standort": "bude2",
+      "items": [
+        {
+          "productId": 1,
+          "quantity": 3,
+          "priceAtOrder": 4.5
+        }
+      ],
+      "total": 13.5,
+      "status": "rejected",
+      "deliveryTime": null,
+      "notes": null,
+      "createdBy": "admin",
+      "createdAt": "2025-08-18T19:47:55.180Z",
+      "updatedAt": "2025-08-18T19:48:01.180Z"
+    },
+    {
+      "id": 19,
+      "standort": "bude1",
+      "items": [
+        {
+          "productId": 1,
+          "quantity": 1,
+          "priceAtOrder": 4.5
+        }
+      ],
+      "total": 4.5,
+      "status": "rejected",
+      "deliveryTime": null,
+      "notes": null,
+      "createdBy": "admin",
+      "createdAt": "2025-08-18T19:48:49.410Z",
+      "updatedAt": "2025-08-18T19:48:54.435Z"
+    },
+    {
+      "id": 20,
+      "standort": "bude1",
+      "items": [
+        {
+          "productId": 1,
+          "quantity": 3,
+          "priceAtOrder": 4.5
+        },
+        {
+          "productId": 2,
+          "quantity": 4,
+          "priceAtOrder": 3
+        },
+        {
+          "productId": 3,
+          "quantity": 3,
+          "priceAtOrder": 1
+        },
+        {
+          "productId": 4,
+          "quantity": 3,
+          "priceAtOrder": 2
+        }
+      ],
+      "total": 34.5,
+      "status": "delivered",
+      "deliveryTime": null,
+      "notes": null,
+      "createdBy": "admin",
+      "createdAt": "2025-08-19T08:04:40.405Z",
+      "updatedAt": "2025-08-19T08:04:58.934Z"
+    }
+  ],
+  "idempotency": {}
+}

@@ -1,0 +1,90 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "passwordHash": "$2a$10$9cPlGv4Wk0iRCQp3fQh0Je7eVYw3oZe7nqKxLtWb9e9b0c2KxVgdu",
+      "role": "admin",
+      "standort": null
+    },
+    {
+      "id": 2,
+      "username": "lieferant",
+      "passwordHash": "$2a$10$Zt1bG3q2w.9C9qf7qKkZdeqQm8nqj0A8c3w0xB9ZtQ7g8j6n9pVga",
+      "role": "lieferant",
+      "standort": null
+    },
+    {
+      "id": 3,
+      "username": "bude1",
+      "passwordHash": "$2a$10$1r8K3l9Qv7pZc1Rj5bNQ4u1E3yZzJ8qA7h2k9mL3pR6s1Y2tV0E8.",
+      "role": "bierbude",
+      "standort": "bude1"
+    },
+    {
+      "id": 4,
+      "username": "bude2",
+      "passwordHash": "$2a$10$1r8K3l9Qv7pZc1Rj5bNQ4u1E3yZzJ8qA7h2k9mL3pR6s1Y2tV0E8.",
+      "role": "bierbude",
+      "standort": "bude2"
+    }
+  ],
+  "stands": [
+    {
+      "id": 1,
+      "code": "bude1",
+      "name": "Bierbude 1",
+      "type": "bierbude"
+    },
+    {
+      "id": 2,
+      "code": "bude2",
+      "name": "Bierbude 2",
+      "type": "bierbude"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Pils 0,5L",
+      "category": "bier",
+      "price": 2.5,
+      "minStock": 10,
+      "barcode": "PILS05",
+      "stock": 100,
+      "isActive": true
+    },
+    {
+      "id": 2,
+      "name": "Weizen 0,5L",
+      "category": "bier",
+      "price": 3.0,
+      "minStock": 10,
+      "barcode": "WEIZ05",
+      "stock": 80,
+      "isActive": true
+    },
+    {
+      "id": 3,
+      "name": "Wasser 0,5L",
+      "category": "wasser",
+      "price": 1.0,
+      "minStock": 20,
+      "barcode": "WASS05",
+      "stock": 150,
+      "isActive": true
+    },
+    {
+      "id": 4,
+      "name": "Cola 0,33L",
+      "category": "softdrinks",
+      "price": 2.0,
+      "minStock": 15,
+      "barcode": "COLA033",
+      "stock": 120,
+      "isActive": true
+    }
+  ],
+  "orders": [],
+  "idempotency": {}
+}

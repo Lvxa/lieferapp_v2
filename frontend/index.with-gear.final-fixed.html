@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turnier Lieferantensystem - Production</title>
+    <style>
+        /* Basis Styles - gleich wie vorher aber mit API Integration */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .header h1 {
+            color: #4a5568;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-btn {
+            background: linear-gradient(45deg, #f56565, #e53e3e);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .role-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .role-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .role-btn.active {
+            background: linear-gradient(45deg, #00d2d3, #54a0ff);
+        }
+
+        .dashboard {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4299e1, #3182ce);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #f56565, #e53e3e);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4299e1;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: #48bb78;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: #f56565;
+        }
+
+        .notification.warning {
+            background: #ed8936;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending { background-color: #fed7aa; color: #9c4221; }
+        .status-approved { background-color: #bbf7d0; color: #166534; }
+        .status-rejected { background-color: #fecaca; color: #991b1b; }
+        .status-processing { background-color: #ddd6fe; color: #5b21b6; }
+        .status-delivered { background-color: #d1fae5; color: #065f46; }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .order-item {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s ease;
+        }
+
+        .order-item.pending {
+            border-color: #f6ad55;
+            background-color: #fffaf0;
+        }
+
+        .order-item.approved {
+            border-color: #68d391;
+            background-color: #f0fff4;
+        }
+
+        .order-item.rejected {
+            border-color: #fc8181;
+            background-color: #fff5f5;
+        }
+
+        .connection-status {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .connection-status.connected {
+            background: #48bb78;
+            color: white;
+        }
+
+        .connection-status.disconnected {
+            background: #f56565;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-container">
+        <h2 style="text-align: center; margin-bottom: 30px; color: #4a5568;">🍺 Turnier System Login</h2>
+        
+        <div class="form-group">
+            <label>Benutzername</label>
+            <input type="text" id="login-username" placeholder="Benutzername eingeben">
+        </div>
+        
+        <div class="form-group">
+            <label>Passwort</label>
+            <input type="password" id="login-password" placeholder="Passwort eingeben">
+        </div>
+        
+        <button class="btn btn-primary" onclick="login()" style="width: 100%;">Anmelden</button>
+        
+        <div style="margin-top: 20px; padding: 15px; background: #f7fafc; border-radius: 8px; font-size: 0.9rem;">
+            <strong>Demo-Zugänge:</strong><br>
+            Admin: admin / admin123<br>
+            Bierbude: bude1 / bude123<br>
+            Lieferant: lieferant / lieferant123
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="main-app" style="display: none;">
+        <div class="container">
+            <div class="header">
+                <div>
+                    <h1>🍺 Turnier Lieferantensystem</h1>
+                    <div class="role-selector">
+                        <button class="role-btn active" data-role="admin" onclick="switchRole('admin')">Admin Panel</button>
+                        <button class="role-btn" data-role="bierbude" onclick="switchRole('bierbude')">Bierbude</button>
+                        <button class="role-btn" data-role="lieferant" onclick="switchRole('lieferant')">Lieferanten Dashboard</button>
+                    </div>
+                </div>
+                
+                <div class="user-info">
+                    <span id="user-display">Nicht angemeldet</span>
+                    <button class="logout-btn" onclick="logout()">Abmelden</button>
+                </div>
+            </div>
+
+            <!-- Admin Panel -->
+            <div id="admin-dashboard" class="dashboard active">
+                <h2>Admin Panel - Bestandsverwaltung</h2>
+                
+                <div class="stats" id="admin-stats">
+                    <!-- Stats werden dynamisch geladen -->
+                </div>
+
+                <div class="grid">
+                    <div class="card">
+                        <h3>Neues Produkt hinzufügen</h3>
+                        <form id="product-form">
+                            <div class="form-group">
+                                <label>Produktname</label>
+                                <input type="text" id="product-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Kategorie</label>
+                                <select id="product-category" required>
+                                    <option value="bier">Bier</option>
+                                    <option value="softdrinks">Softdrinks</option>
+                                    <option value="wasser">Wasser</option>
+                                    <option value="snacks">Snacks</option>
+                                    <option value="sonstiges">Sonstiges</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Bestand</label>
+                                <input type="number" id="product-stock" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Mindestbestand</label>
+                                <input type="number" id="product-min-stock" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Preis (€)</label>
+                                <input type="number" id="product-price" step="0.01" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Barcode (optional)</label>
+                                <input type="text" id="product-barcode">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Produkt hinzufügen</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <h3>CSV Import</h3>
+                        <div class="form-group">
+                            <label>CSV Datei auswählen</label>
+                            <input type="file" id="csv-file" accept=".csv" onchange="importCSV()">
+                        </div>
+                        <div style="margin-top: 15px;">
+                            <button class="btn btn-primary" onclick="exportData()">📥 Daten exportieren</button>
+                            <button class="btn btn-danger" onclick="generateReport()">📊 Bericht erstellen</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Aktuelle Bestände</h3>
+                        <div id="stock-list">
+                            <div class="loading"><div class="spinner"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bierbude Dashboard -->
+            <div id="bierbude-dashboard" class="dashboard">
+                <h2>Bierbude - Bestellung aufgeben</h2>
+                
+                <div class="form-group">
+                    <label>🔍 Produkte suchen</label>
+                    <input type="text" id="product-search" placeholder="Produktname eingeben..." oninput="filterProducts()">
+                </div>
+
+                <div class="grid">
+                    <div class="card">
+                        <h3>Verfügbare Produkte</h3>
+                        <div id="available-products">
+                            <div class="loading"><div class="spinner"></div></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Aktuelle Bestellung</h3>
+                        <div id="current-order"></div>
+                        <div class="form-group">
+                            <label>Lieferzeit (optional)</label>
+                            <input type="datetime-local" id="delivery-time">
+                        </div>
+                        <div class="form-group">
+                            <label>Notizen (optional)</label>
+                            <textarea id="order-notes" rows="3" placeholder="Besondere Wünsche oder Anmerkungen..."></textarea>
+                        </div>
+                        <button class="btn btn-success" onclick="submitOrder()" id="submit-order-btn" style="display:none; width: 100%;">Bestellung abschicken</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Meine Bestellungen</h3>
+                    <div id="my-orders">
+                        <div class="loading"><div class="spinner"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lieferanten Dashboard -->
+            <div id="lieferant-dashboard" class="dashboard">
+                <h2>Lieferanten Dashboard</h2>
+                
+                <div class="stats" id="lieferant-stats">
+                    <!-- Stats werden dynamisch geladen -->
+                </div>
+
+                <div class="card">
+                    <h3>Eingehende Bestellungen</h3>
+                    <div style="margin-bottom: 15px;">
+                        <button class="btn btn-primary" onclick="loadOrders('pending')">Ausstehend</button>
+                        <button class="btn btn-success" onclick="loadOrders('approved')">Bestätigt</button>
+                        <button class="btn btn-danger" onclick="loadOrders('rejected')">Abgelehnt</button>
+                        <button class="btn" onclick="loadOrders()">Alle</button>
+                    </div>
+                    <div id="orders-list">
+                        <div class="loading"><div class="spinner"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connection Status -->
+    <div id="connection-status" class="connection-status connected">🟢 Verbunden</div>
+
+    <!-- Notifications -->
+    <div class="notification" id="notification"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script>
+        // Globale Variablen
+        let currentUser = null;
+        let authToken = null;
+        let socket = null;
+        let currentCart = [];
+        let products = [];
+        let orders = [];
+
+        // API Base URL (robust for localhost/127/192.168/10.x/:5500/file and Prod)
+const DEV =
+  location.hostname === 'localhost' ||
+  location.hostname === '127.0.0.1' ||
+  /^192\.168\./.test(location.hostname) ||
+  /^10\./.test(location.hostname) ||
+  location.port === '5500' ||
+  location.protocol === 'file:';
+
+const HOST = (location.hostname === '' || location.hostname === 'localhost')
+  ? '127.0.0.1'
+  : location.hostname;
+
+const API_BASE = DEV ? `http://${HOST}:3001/api` : '/api';
+const WS_BASE  = DEV ? `http://${HOST}:3001`     : '';
+
+// keep window.* in sync
+window.API_BASE = API_BASE; window.WS_BASE = WS_BASE;
+
+
+
+        // Utility Functions
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        function showLoading(elementId) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'Ausstehend',
+                'approved': 'Bestätigt',
+                'rejected': 'Abgelehnt',
+                'processing': 'In Bearbeitung',
+                'delivered': 'Geliefert'
+            };
+            return statusMap[status] || status;
+        }
+
+        // API Helper Functions
+        async function apiCall(endpoint, options = {}) {
+            const url = `${API_BASE}${endpoint}`;
+            
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(authToken && { 'Authorization': `Bearer ${authToken}` })
+                }
+            };
+
+            const response = await fetch(url, { ...defaultOptions, ...options });
+            
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({ error: 'Network error' }));
+                throw new Error(error.error || `HTTP ${response.status}`);
+            }
+
+            return response.json();
+        }
+
+        // Authentication
+        async function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            if (!username || !password) {
+                showNotification('Bitte alle Felder ausfüllen!', 'error');
+                return;
+            }
+
+            try {
+                const response = await apiCall('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ username, password })
+                });
+
+                authToken = response.token;
+                currentUser = response.user;
+                
+                // Token im sessionStorage speichern
+                sessionStorage.setItem('authToken', authToken);
+                sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+                // UI umschalten
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+                document.getElementById('user-display').textContent = 
+                    `${currentUser.username} (${currentUser.role})`;
+
+                // WebSocket Verbindung initialisieren
+                initWebSocket();
+
+                // Rolle-spezifische UI anzeigen
+                switchRole(currentUser.role);
+                
+                showNotification('Erfolgreich angemeldet!');
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showNotification(error.message, 'error');
+            }
+        }
+
+        function logout() {
+            authToken = null;
+            currentUser = null;
+            sessionStorage.removeItem('authToken');
+            sessionStorage.removeItem('currentUser');
+            
+            if (socket) {
+                socket.disconnect();
+            }
+
+            document.getElementById('login-screen').style.display = 'block';
+            document.getElementById('main-app').style.display = 'none';
+            
+            showNotification('Erfolgreich abgemeldet!');
+        }
+
+        // Check for existing session
+        function checkExistingSession() {
+            const token = sessionStorage.getItem('authToken');
+            const user = sessionStorage.getItem('currentUser');
+            
+            if (token && user) {
+                authToken = token;
+                currentUser = JSON.parse(user);
+                
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+                document.getElementById('user-display').textContent = 
+                    `${currentUser.username} (${currentUser.role})`;
+                
+                initWebSocket();
+                switchRole(currentUser.role);
+            }
+        }
+
+        // WebSocket
+        function initWebSocket() {
+            socket = io(WS_BASE, {
+                auth: {
+                    token: authToken
+                }
+            });
+
+            socket.on('connect', () => {
+                document.getElementById('connection-status').className = 'connection-status connected';
+                document.getElementById('connection-status').innerHTML = '🟢 Verbunden';
+                
+                // Join room based on user role
+                socket.emit('join', currentUser);
+            });
+
+            socket.on('disconnect', () => {
+                document.getElementById('connection-status').className = 'connection-status disconnected';
+                document.getElementById('connection-status').innerHTML = '🔴 Getrennt';
+            });
+
+            // Real-time events
+            socket.on('new_order', (order) => {
+                if (currentUser.role === 'lieferant') {
+                    showNotification(`Neue Bestellung #${order.id} von ${order.standort}!`, 'info');
+                    loadOrders(); // Reload orders
+                }
+            });
+
+            socket.on('order_status_changed', (data) => {
+                showNotification(`Bestellung #${data.orderId} wurde ${data.status}!`, 'info');
+                loadOrders(); // Reload orders
+                loadMyOrders(); // Reload my orders if bierbude
+            });
+
+            socket.on('product_updated', (product) => {
+                showNotification(`Produkt ${product.name} wurde aktualisiert!`, 'info');
+                loadProducts();
+            });
+
+            socket.on('stock_updated', (data) => {
+                showNotification(`Bestand von ${data.productName} geändert: ${data.newStock}`, 'info');
+                loadProducts();
+                loadStockList();
+            });
+        }
+
+        // Role Management
+        function switchRole(role) {
+            if (currentUser.role !== 'admin' && currentUser.role !== role) {
+                // Normale User können nur ihre eigene Rolle sehen
+                role = currentUser.role;
+            }
+
+            // UI Update
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.role === role) {
+                    btn.classList.add('active');
+                }
+            });
+
+            document.querySelectorAll('.dashboard').forEach(dashboard => {
+                dashboard.classList.remove('active');
+            });
+
+            document.getElementById(`${role}-dashboard`).classList.add('active');
+
+            // Load role-specific data
+            switch (role) {
+                case 'admin':
+                    loadAdminData();
+                    break;
+                case 'bierbude':
+                    loadBierbudeData();
+                    break;
+                case 'lieferant':
+                    loadLieferantData();
+                    break;
+            }
+        }
+
+        // Admin Functions
+        async function loadAdminData() {
+            loadProducts();
+            loadStockList();
+            loadAdminStats();
+        }
+
+        async function loadAdminStats() {
+            try {
+                const stats = await apiCall('/analytics/dashboard');
+                
+                const statsHtml = `
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.totalProducts}</div>
+                        <div class="stat-label">Produkte</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.totalOrders}</div>
+                        <div class="stat-label">Bestellungen</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.lowStockProducts}</div>
+                        <div class="stat-label">Niedrige Bestände</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">€${stats.totalRevenue.toFixed(2)}</div>
+                        <div class="stat-label">Umsatz</div>
+                    </div>
+                `;
+                
+                document.getElementById('admin-stats').innerHTML = statsHtml;
+            } catch (error) {
+                console.error('Error loading admin stats:', error);
+            }
+        }
+
+        async function loadProducts() {
+            try {
+                products = await apiCall('/products');
+            } catch (error) {
+                console.error('Error loading products:', error);
+                showNotification('Fehler beim Laden der Produkte', 'error');
+            }
+        }
+
+        async function loadStockList() {
+            showLoading('stock-list');
+            
+            try {
+                await loadProducts();
+                
+                const stockListHtml = products.map(product => `
+                    <div class="order-item ${product.stock <= product.minStock ? 'pending' : ''}">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>${product.name}</strong><br>
+                                <small>${product.category} - €${product.price}</small>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="font-weight: bold; ${product.stock <= product.minStock ? 'color: red;' : ''}">${product.stock}</span>
+                                <small>/ ${product.minStock} min</small><br>
+                                <button class="btn btn-danger" onclick="adjustStock(${product.id}, -1)" style="padding: 5px 10px; margin: 2px;">-</button>
+                                <button class="btn btn-primary" onclick="adjustStock(${product.id}, 1)" style="padding: 5px 10px; margin: 2px;">+</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('stock-list').innerHTML = stockListHtml || '<p>Keine Produkte vorhanden</p>';
+                
+            } catch (error) {
+                document.getElementById('stock-list').innerHTML = '<p>Fehler beim Laden der Bestände</p>';
+            }
+        }
+
+        // Product Form Handler
+        document.getElementById('product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const productData = {
+                name: document.getElementById('product-name').value,
+                category: document.getElementById('product-category').value,
+                stock: parseInt(document.getElementById('product-stock').value),
+                minStock: parseInt(document.getElementById('product-min-stock').value),
+                price: parseFloat(document.getElementById('product-price').value),
+                barcode: document.getElementById('product-barcode').value || null
+            };
+
+            try {
+                await apiCall('/products', {
+                    method: 'POST',
+                    body: JSON.stringify(productData)
+                });
+
+                showNotification('Produkt erfolgreich hinzugefügt!');
+                document.getElementById('product-form').reset();
+                loadProducts();
+                loadStockList();
+                
+            } catch (error) {
+                showNotification(error.message, 'error');
+            }
+        });
+
+        async function adjustStock(productId, adjustment) {
+            try {
+                await apiCall(`/products/${productId}/adjust-stock`, {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        adjustment, 
+                        reason: adjustment > 0 ? 'Manueller Zugang' : 'Manueller Abgang' 
+                    })
+                });
+
+                loadStockList();
+                
+            } catch (error) {
+                showNotification(error.message, 'error');
+            }
+        }
+
+        // CSV Import
+        async function importCSV() {
+            const fileInput = document.getElementById('csv-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showNotification('Bitte eine Datei auswählen!', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch(`${API_BASE}/import/products`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showNotification(`${result.imported} Produkte erfolgreich importiert!`);
+                    loadProducts();
+                    loadStockList();
+                } else {
+                    throw new Error(result.error);
+                }
+                
+            } catch (error) {
+                showNotification(error.message, 'error');
+            }
+
+            fileInput.value = '';
+        }
+
+        // Export Data
+        async function exportData() {
+            try {
+                const response = await fetch(`${API_BASE}/export/full`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `turnier-system-backup-${new Date().toISOString().split('T')[0]}.json`;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    
+                    showNotification('Daten erfolgreich exportiert!');
+                } else {
+                    throw new Error('Export fehlgeschlagen');
+                }
+                
+            } catch (error) {
+                showNotification(error.message, 'error');
+            }
+        }
+
+        // Generate Report
+        async function generateReport() {
+            try {
+                const response = await fetch(`${API_BASE}/export/report`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `turnier-report-${new Date().toISOString().split('T')[0]}.pdf`;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    
+                    showNotification('Bericht erfolgreich erstellt!');
+                } else {
+                    throw new Error('Bericht-Erstellung fehlgeschlagen');
+                }
+                
+            } catch (error) {
+                showNotification(error.message, 'error');
+            }
+        }
+
+        // Bierbude Functions
+        async function loadBierbudeData() {
+            loadAvailableProducts();
+            loadMyOrders();
+        }
+
+        async function loadAvailableProducts() {
+            showLoading('available-products');
+            
+            try {
+                await loadProducts();
+                
+                const availableProducts = products.filter(p => p.stock > 0 && p.isActive !== false);
+                
+                const productsHtml = availableProducts.map(product => `
+                    <div class="order-item" data-product-name="${product.name.toLowerCase()}">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>${product.name}</strong><br>
+                                <small>€${product.price} - Verfügbar: ${product.stock}</small>
+                            </div>
+                            <div>
+                                <input type="number" id="qty-${product.id}" min="1" max="${product.stock}" value="1" style="width: 60px; margin-right: 10px;">
+                                <button class="btn btn-primary" onclick="addToCart(${product.id})">+</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('available-products').innerHTML = productsHtml || '<p>Keine Produkte verfügbar</p>';
+                
+            } catch (error) {
+                document.getElementById('available-products').innerHTML = '<p>Fehler beim Laden der Produkte</p>';
+            }
+        }
+
+        function filterProducts() {
+            const searchTerm = document.getElementById('product-search').value.toLowerCase();
+            const productItems = document.querySelectorAll('#available-products .order-item');
+            
+            productItems.forEach(item => {
+                const productName = item.dataset.productName;
+                if (productName.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const qtyInput = document.getElementById(`qty-${productId}`);
+            const quantity = parseInt(qtyInput.value);
+
+            if (!product || quantity < 1 || quantity > product.stock) {
+                showNotification('Ungültige Menge!', 'error');
+                return;
+            }
+
+            const existingItem = currentCart.find(item => item.productId === productId);
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                currentCart.push({
+                    productId: productId,
+                    name: product.name,
+                    price: product.price,
+                    quantity: quantity
+                });
+            }
+
+            updateCartDisplay();
+            showNotification(`${quantity}x ${product.name} zum Warenkorb hinzugefügt!`);
+        }
+
+        function updateCartDisplay() {
+            const currentOrderDiv = document.getElementById('current-order');
+            const submitBtn = document.getElementById('submit-order-btn');
+
+            if (currentCart.length === 0) {
+                currentOrderDiv.innerHTML = '<p>Warenkorb ist leer</p>';
+                submitBtn.style.display = 'none';
+                return;
+            }
+
+            let total = 0;
+            const cartHtml = currentCart.map((item, index) => {
+                const itemTotal = item.quantity * item.price;
+                total += itemTotal;
+
+                return `
+                    <div class="order-item">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>${item.name}</strong><br>
+                                <small>${item.quantity}x €${item.price} = €${itemTotal.toFixed(2)}</small>
+                            </div>
+                            <button class="btn btn-danger" onclick="removeFromCart(${index})" style="padding: 5px 10px;">×</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            currentOrderDiv.innerHTML = cartHtml + `
+                <div style="text-align: right; margin-top: 15px; font-size: 1.2rem; font-weight: bold;">
+                    Gesamtsumme: €${total.toFixed(2)}
+                </div>
+            `;
+
+            submitBtn.style.display = 'block';
+        }
+
+        function removeFromCart(index) {
+            currentCart.splice(index, 1);
+            updateCartDisplay();
+            showNotification('Artikel entfernt!');
+        }
+
+        async function submitOrder() {
+            if (currentCart.length === 0) {
+                showNotification('Warenkorb ist leer!', 'error');
+                return;
+            }
+
+            const orderData = {
+                items: currentCart.map(item => ({
+                    productId: item.productId,
+                    quantity: item.quantity
+                })),
+                deliveryTime: document.getElementById('delivery-time').value || null,
+                notes: document.getElementById('order-notes').value || ''
+            };
+
+            try {
+                const newOrder = await apiCall('/orders', {
+                    method: 'POST',
+                    body: JSON.stringify(orderData)
+                });
+
+                currentCart = [];
+                updateCartDisplay();
+                document.getElementById('delivery-time').value = '';
+                document.getElementById('order-notes').value = '';
+                
+                showNotification(`Bestellung #${newOrder.id} erfolgreich abgeschickt!`);
+                loadMyOrders();
+                
+            } catch (error) {
+                showNotification(error.message, 'error');
+            }
+        }
+
+        async function loadMyOrders() {
+            if (currentUser.role !== 'bierbude') return;
+            
+            showLoading('my-orders');
+            
+            try {
+                const myOrders = await apiCall('/orders');
+                
+                const ordersHtml = myOrders.map(order => `
+                    <div class="order-item ${order.status}">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                            <div>
+                                <strong>Bestellung #${order.id}</strong>
+                                <span class="status-badge status-${order.status}">${getStatusText(order.status)}</span>
+                            </div>
+                            <div style="text-align: right;">
+                                <strong>€${order.total.toFixed(2)}</strong><br>
+                                <small>${new Date(order.createdAt).toLocaleString('de-DE')}</small>
+                            </div>
+                        </div>
+                        <div><strong>Artikel:</strong><br>
+                            ${order.items.map(item => `${item.quantity}x ${item.productName}`).join(', ')}
+                        </div>
+                        ${order.notes ? `<div style="margin-top: 10px;"><strong>Notizen:</strong> ${order.notes}</div>` : ''}
+                        ${order.deliveryTime ? `<div><strong>Lieferzeit:</strong> ${new Date(order.deliveryTime).toLocaleString('de-DE')}</div>` : ''}
+                    </div>
+                `).join('');
+                
+                document.getElementById('my-orders').innerHTML = ordersHtml || '<p>Keine Bestellungen vorhanden</p>';
+                
+            } catch (error) {
+                document.getElementById('my-orders').innerHTML = '<p>Fehler beim Laden der Bestellungen</p>';
+            }
+        }
+
+        // Lieferant Functions
+        async function loadLieferantData() {
+            loadOrders();
+            loadLieferantStats();
+        }
+
+        async function loadLieferantStats() {
+            try {
+                const stats = await apiCall('/analytics/supplier');
+                
+                const statsHtml = `
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.pendingOrders}</div>
+                        <div class="stat-label">Ausstehende Bestellungen</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.todayOrders}</div>
+                        <div class="stat-label">Heute eingegangen</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${stats.completedOrders}</div>
+                        <div class="stat-label">Abgeschlossen</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">€${stats.totalRevenue.toFixed(2)}</div>
+                        <div class="stat-label">Gesamtumsatz</div>
+                    </div>
+                `;
+                
+                document.getElementById('lieferant-stats').innerHTML = statsHtml;
+            } catch (error) {
+                console.error('Error loading supplier stats:', error);
+            }
+        }
+
+        async function loadOrders(status = null) {
+            showLoading('orders-list');
+            
+            try {
+                let endpoint = '/orders/all';
+                if (status) {
+                    endpoint += `?status=${status}`;
+                }
+                
+                const ordersList = await apiCall(endpoint);
+                
+                const ordersHtml = ordersList.map(order => `
+                    <div class="order-item ${order.status}">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                            <div>
+                                <strong>Bestellung #${order.id}</strong>
+                                <span class="status-badge status-${order.status}">${getStatusText(order.status)}</span><br>
+                                <small>von: <strong>${order.standort || order.username}</strong></small>
+                            </div>
+                            <div style="text-align: right;">
+                                <strong>€${order.total.toFixed(2)}</strong><br>
+                                <small>${new Date(order.createdAt).toLocaleString('de-DE')}</small>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <strong>Artikel:</strong><br>
+                            ${order.items.map(item => `
+                                <div style="margin-left: 15px;">
+                                    ${item.quantity}x ${item.productName} (€${item.price} = €${(item.quantity * item.price).toFixed(2)})
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        ${order.notes ? `<div style="margin-bottom: 15px;"><strong>Notizen:</strong> ${order.notes}</div>` : ''}
+                        ${order.deliveryTime ? `<div style="margin-bottom: 15px;"><strong>Gewünschte Lieferzeit:</strong> ${new Date(order.deliveryTime).toLocaleString('de-DE')}</div>` : ''}
+                        
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            ${order.status === 'pending' ? `
+                                <button class="btn btn-success" onclick="updateOrderStatus(${order.id}, 'approved')">✓ Bestätigen</button>
+                                <button class="btn btn-danger" onclick="updateOrderStatus(${order.id}, 'rejected')">✗ Ablehnen</button>
+                            ` : ''}
+                            ${order.status === 'approved' ? `
+                                <button class="btn btn-primary" onclick="updateOrderStatus(${order.id}, 'processing')">🚛 In Bearbeitung</button>
+                            ` : ''}
+                            ${order.status === 'processing' ? `
+                                <button class="btn btn-success" onclick="updateOrderStatus(${order.id}, 'delivered')">✓ Geliefert</button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('orders-list').innerHTML = ordersHtml || '<p>Keine Bestellungen vorhanden</p>';
+                
+            } catch (error) {
+                document.getElementById('orders-list').innerHTML = '<p>Fehler beim Laden der Bestellungen</p>';
+            }
+        }
+
+        async function updateOrderStatus(orderId, status) {
+            try {
+                await apiCall(`/orders/${orderId}/status`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ status })
+                });
+
+                showNotification(`Bestellung #${orderId} Status auf "${getStatusText(status)}" aktualisiert!`);
+                loadOrders();
+                loadLieferantStats();
+                
+            } catch (error) {
+                showNotification(error.message, 'error');
+            }
+        }
+
+        // Enter key support for login
+        document.addEventListener('DOMContentLoaded', () => {
+            checkExistingSession();
+            
+            document.getElementById('login-username').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('login-password').focus();
+                }
+            });
+            
+            document.getElementById('login-password').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    login();
+                }
+            });
+        });
+
+        // Auto-refresh für Live-Daten
+        setInterval(() => {
+            if (currentUser && authToken) {
+                switch (currentUser.role) {
+                    case 'admin':
+                        loadAdminStats();
+                        break;
+                    case 'lieferant':
+                        loadLieferantStats();
+                        break;
+                }
+            }
+        }, 30000); // Alle 30 Sekunden
+
+    </script>
+
+<!-- === BEGIN: Surgical Admin Patch (adds optional admin panel; no redesign) === -->
+<script id="admin-surgical-patch">
+(function(){
+  try {
+    // 1) Robust API base (only if not already set)
+    if (!window.API_BASE) {
+      var isLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:');
+      window.API_BASE = isLocal ? 'http://localhost:3001/api' : '/api';
+    }
+    if (!window.WS_BASE) {
+      var isLocal2 = (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:');
+      window.WS_BASE = isLocal2 ? 'http://localhost:3001' : '';
+    }
+
+    // 2) Helpers using existing token from localStorage (nicht invasiv)
+    function getToken(){
+      try{
+        if (window.token) return window.token;
+        var t = localStorage.getItem('token');
+        return t || '';
+      }catch(e){ return ''; }
+    }
+    function authHeaders(){
+      var t = getToken();
+      return t ? { 'Authorization': 'Bearer ' + t } : {};
+    }
+    async function api(path, opts){
+      opts = opts || {};
+      var res = await fetch((window.API_BASE||'/api') + path, Object.assign({}, opts, {
+        headers: Object.assign({ 'Content-Type':'application/json' }, (opts.headers||{}), authHeaders())
+      }));
+      var data = null;
+      try { data = await res.json(); } catch(e){ data = null; }
+      if(!res.ok) throw { status: res.status, data: data };
+      return data;
+    }
+
+    // 3) Tiny admin button (floating, unobtrusive)
+    var btnId = "adminTinyBtn__42";
+    var panelId = "adminTinyPanel__42";
+    function ensureAdminButton(){
+      if (document.getElementById(btnId)) return;
+      var btn = document.createElement('button');
+      btn.id = btnId;
+      btn.textContent = "Admin‑Panel";
+      btn.style.position = "fixed";
+      btn.style.right = "14px";
+      btn.style.bottom = "14px";
+      btn.style.zIndex = "99999";
+      btn.style.padding = "8px 10px";
+      btn.style.borderRadius = "8px";
+      btn.style.border = "1px solid #bbb";
+      btn.style.background = "#fff";
+      btn.style.cursor = "pointer";
+      btn.style.boxShadow = "0 6px 20px rgba(0,0,0,.15)";
+      btn.addEventListener('click', togglePanel);
+      document.body.appendChild(btn);
+    }
+    function togglePanel(){
+      var p = document.getElementById(panelId);
+      if (!p) { buildPanel(); }
+      else { p.style.display = (p.style.display === 'none' ? 'block' : 'none'); }
+    }
+
+    // 4) Panel (Stände/Produkte/Benutzer) – nur Admin, rein optional
+    function buildPanel(){
+      if (document.getElementById(panelId)) return;
+      var p = document.createElement('div');
+      p.id = panelId;
+      p.style.position = "fixed";
+      p.style.right = "14px";
+      p.style.bottom = "58px";
+      p.style.width = "360px";
+      p.style.maxHeight = "60vh";
+      p.style.overflow = "auto";
+      p.style.zIndex = "99998";
+      p.style.padding = "10px";
+      p.style.borderRadius = "10px";
+      p.style.border = "1px solid #cfd6e4";
+      p.style.background = "#f9fbff";
+      p.style.boxShadow = "0 10px 30px rgba(0,0,0,.20)";
+      p.innerHTML = '<div style="display:flex;align-items:center;gap:8px;justify-content:space-between;">'
+        + '<strong>Admin‑Panel</strong>'
+        + '<button id="adminPanelClose" style="border:1px solid #bbb;background:#fff;border-radius:6px;padding:4px 8px;cursor:pointer">X</button>'
+        + '</div>'
+        + '<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">'
+        + '  <button class="ap_btn" data-tab="stands">Stände</button>'
+        + '  <button class="ap_btn" data-tab="products">Produkte</button>'
+        + '  <button class="ap_btn" data-tab="users">Benutzer</button>'
+        + '</div>'
+        + '<div id="ap_content" style="margin-top:8px;font-size:14px;color:#222"></div>'
+        + '<style>.ap_btn{border:1px solid #bbb;background:#fff;border-radius:6px;padding:6px 8px;cursor:pointer}</style>';
+      document.body.appendChild(p);
+      document.getElementById('adminPanelClose').onclick = function(){ p.style.display='none'; };
+      // Default: Stände
+      loadStands();
+      p.querySelectorAll('.ap_btn').forEach(function(b){
+        b.addEventListener('click', function(){
+          var tab = b.getAttribute('data-tab');
+          if (tab==='stands') loadStands();
+          if (tab==='products') loadProducts();
+          if (tab==='users') loadUsers();
+        });
+      });
+    }
+
+    // 5) Stände – list / add / rename / type / delete
+    async function loadStands(){
+      var c = document.getElementById('ap_content'); if (!c) return;
+      c.innerHTML = '<div>lade Stände …</div>';
+      try {
+        var stands = await api('/stands');
+        var html = '<div style="display:grid;gap:6px">'
+          + '<div><strong>Stände</strong></div>'
+          + stands.map(function(s){
+              return '<div style="border:1px solid #e6ebf5;padding:6px;border-radius:6px;background:#fff">'
+                   + '<div><strong>'+escapeHtml(s.name)+'</strong> <span style="color:#666">('+s.id+')</span> · <span class="pill">'+s.type+'</span></div>'
+                   + '<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">'
+                   +   '<button class="ap_btn" data-rename="'+s.id+'">Umbenennen</button>'
+                   +   '<button class="ap_btn" data-type="'+s.id+'">Typ ändern</button>'
+                   +   '<button class="ap_btn" data-del-stand="'+s.id+'">Löschen</button>'
+                   + '</div>'
+                   + '</div>';
+            }).join('')
+          + '<div style="margin-top:6px;border-top:1px dashed #ccd3e2;padding-top:6px">'
+          +   '<div><strong>Neuen Stand anlegen</strong></div>'
+          +   '<div style="display:flex;gap:6px;flex-wrap:wrap">'
+          +     '<input id="ap_s_id" placeholder="id" style="flex:1;min-width:80px;padding:6px;border:1px solid #ccd3e2;border-radius:6px" />'
+          +     '<input id="ap_s_name" placeholder="Name" style="flex:1;min-width:120px;padding:6px;border:1px solid #ccd3e2;border-radius:6px" />'
+          +     '<select id="ap_s_type" style="padding:6px;border:1px solid #ccd3e2;border-radius:6px"><option value="bierbude">bierbude</option><option value="vip">vip</option></select>'
+          +     '<button class="ap_btn" id="ap_s_add">Anlegen</button>'
+          +   '</div>'
+          + '</div>'
+          + '</div>';
+        c.innerHTML = html;
+
+        c.querySelectorAll('button[data-rename]').forEach(function(b){
+          b.addEventListener('click', async function(){
+            var id = b.getAttribute('data-rename');
+            var name = prompt('Neuer Name:');
+            if (!name) return;
+            try { await api('/stands/'+id, { method:'PUT', body: JSON.stringify({ name: name }) }); alert('OK'); loadStands(); } catch(e){ alert('Fehler: '+(e.status||'') ); }
+          });
+        });
+        c.querySelectorAll('button[data-type]').forEach(function(b){
+          b.addEventListener('click', async function(){
+            var id = b.getAttribute('data-type');
+            var type = prompt('Neuer Typ (bierbude|vip):','bierbude');
+            if (!type) return;
+            try { await api('/stands/'+id, { method:'PUT', body: JSON.stringify({ type: type }) }); alert('OK'); loadStands(); } catch(e){ alert('Fehler: '+(e.status||'')); }
+          });
+        });
+        c.querySelectorAll('button[data-del-stand]').forEach(function(b){
+          b.addEventListener('click', async function(){
+            var id = b.getAttribute('data-del-stand');
+            if (!confirm('Stand wirklich löschen?')) return;
+            try { await api('/stands/'+id, { method:'DELETE' }); alert('Stand gelöscht'); loadStands(); }
+            catch(e){ if(e.status===409) alert('Stand wird noch verwendet (User/Bestellungen)'); else alert('Konnte nicht löschen'); }
+          });
+        });
+        c.querySelector('#ap_s_add').addEventListener('click', async function(){
+          var id = document.getElementById('ap_s_id').value.trim();
+          var name = document.getElementById('ap_s_name').value.trim();
+          var type = document.getElementById('ap_s_type').value;
+          if (!id || !name) return alert('Bitte id & Name');
+          try { await api('/stands', { method:'POST', body: JSON.stringify({ id:id, name:name, type:type }) }); alert('Stand angelegt'); loadStands(); }
+          catch(e){ alert('Fehler: '+(e.status||'')); }
+        });
+
+      } catch(e){ c.innerHTML = '<div>Fehler beim Laden der Stände.</div>'; }
+    }
+
+    // 6) Produkte – nur löschen (ohne UI-Eingriff in dein Grid)
+    async function loadProducts(){
+      var c = document.getElementById('ap_content'); if (!c) return;
+      c.innerHTML = '<div>lade Produkte …</div>';
+      try{
+        var list = await api('/products');
+        c.innerHTML = '<div><strong>Produkte</strong></div>'
+          + '<div style="font-size:12px;color:#444;margin-bottom:6px">Nur Löschen (konfliktfrei), Bearbeiten machst du wie bisher im Haupt‑UI.</div>'
+          + '<div style="display:grid;gap:6px">'
+          +   list.map(function(p){
+                return '<div style="border:1px solid #e6ebf5;padding:6px;border-radius:6px;background:#fff;display:flex;gap:8px;justify-content:space-between;align-items:center">'
+                     + '<div><strong>'+escapeHtml(p.name)+'</strong> <span style="color:#666">#'+p.id+'</span> · '+(p.category||'-')+'</div>'
+                     + '<button class="ap_btn" data-del-p="'+p.id+'">Löschen</button>'
+                     + '</div>';
+              }).join('')
+          + '</div>';
+        c.querySelectorAll('button[data-del-p]').forEach(function(b){
+          b.addEventListener('click', async function(){
+            var id = b.getAttribute('data-del-p');
+            if (!confirm('Produkt wirklich löschen?')) return;
+            try { await api('/products/'+id, { method:'DELETE' }); alert('Produkt gelöscht'); loadProducts(); }
+            catch(e){ alert('Konnte Produkt nicht löschen'); }
+          });
+        });
+      } catch(e){ c.innerHTML = '<div>Fehler beim Laden der Produkte.</div>'; }
+    }
+
+    // 7) Benutzer – auflisten & löschen (admin nicht)
+    async function loadUsers(){
+      var c = document.getElementById('ap_content'); if (!c) return;
+      c.innerHTML = '<div>lade Benutzer …</div>';
+      try{
+        var list = await api('/users');
+        c.innerHTML = '<div><strong>Benutzer</strong></div>'
+          + '<div style="display:grid;gap:6px">'
+          + list.map(function(u){
+              var delBtn = (u.username==='admin') ? '<span style="color:#888;font-size:12px">admin nicht löschbar</span>'
+                : '<button class="ap_btn" data-del-u="'+u.id+'">Löschen</button>';
+              return '<div style="border:1px solid #e6ebf5;padding:6px;border-radius:6px;background:#fff;display:flex;gap:8px;justify-content:space-between;align-items:center">'
+                     + '<div>#'+u.id+' · '+escapeHtml(u.username)+' · '+u.role+' · '+(u.standort||'-')+'</div>'
+                     + delBtn
+                     + '</div>';
+            }).join('')
+          + '</div>';
+        c.querySelectorAll('button[data-del-u]').forEach(function(b){
+          b.addEventListener('click', async function(){
+            var id = b.getAttribute('data-del-u');
+            if (!confirm('Benutzer wirklich löschen?')) return;
+            try { await api('/users/'+id, { method:'DELETE' }); alert('Benutzer gelöscht'); loadUsers(); }
+            catch(e){ alert('Konnte Benutzer nicht löschen'); }
+          });
+        });
+      } catch(e){ c.innerHTML = '<div>Fehler beim Laden der Benutzer.</div>'; }
+    }
+
+    function escapeHtml(s){
+      if (s==null) return '';
+      return String(s).replace(/[&<>"']/g, function(m){
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m];
+      });
+    }
+
+    // 8) Detect admin login based on localStorage.user.role
+    function isAdmin(){
+      try{
+        var u = localStorage.getItem('user');
+        if (!u) return false;
+        var obj = JSON.parse(u);
+        return obj && obj.role === 'admin';
+      }catch(e){ return false; }
+    }
+    function tryMount(){
+      if (isAdmin()) ensureAdminButton();
+    }
+    tryMount();
+    // falls sich der Login ändert (z. B. nach Login), prüfen wir periodisch
+    var watch = setInterval(tryMount, 1500);
+    window.addEventListener('beforeunload', function(){ clearInterval(watch); });
+  } catch(e) {
+    console && console.warn && console.warn('Admin patch error', e);
+  }
+})();
+</script>
+<!-- === END: Surgical Admin Patch === -->
+
+<!-- Connection settings panel -->
+<div id="conn-panel" style="position:fixed;top:12px;right:12px;z-index:9999;">
+  <button id="conn-gear" style="padding:8px 10px;border-radius:8px;border:0;background:#111827;color:#fff;cursor:pointer;">⚙️ Verbindung</button>
+  <div id="conn-dialog" style="display:none;margin-top:8px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.15);padding:12px;width:280px;">
+    <div style="font-weight:700;margin-bottom:8px;">Backend-Verbindung</div>
+    <label style="display:block;font-size:12px;color:#6b7280;">API Base</label>
+    <input id="conn-api" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:8px;">
+    <label style="display:block;font-size:12px;color:#6b7280;">WS Base</label>
+    <input id="conn-ws" style="width:100%;padding:8px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:10px;">
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button id="conn-save" style="padding:8px 10px;border-radius:8px;border:0;background:#10b981;color:#fff;cursor:pointer;">Speichern</button>
+      <button id="conn-reset" style="padding:8px 10px;border-radius:8px;border:0;background:#ef4444;color:#fff;cursor:pointer;">Reset</button>
+    </div>
+    <div id="conn-note" style="font-size:12px;color:#6b7280;margin-top:6px;"></div>
+  </div>
+</div>
+<script>
+(function(){
+  const gear = document.getElementById('conn-gear');
+  const dlg  = document.getElementById('conn-dialog');
+  const apiI = document.getElementById('conn-api');
+  const wsI  = document.getElementById('conn-ws');
+  const note = document.getElementById('conn-note');
+  const save = document.getElementById('conn-save');
+  const reset= document.getElementById('conn-reset');
+
+  const DEF_API = window.API_BASE || '/api';
+  const DEF_WS  = window.WS_BASE  || '';
+
+  function readOverride(){
+    return {
+      api: sessionStorage.getItem('API_BASE_OVERRIDE') || DEF_API,
+      ws:  sessionStorage.getItem('WS_BASE_OVERRIDE')  || DEF_WS
+    };
+  }
+  function writeOverride(api, ws){
+    if (api!=null) sessionStorage.setItem('API_BASE_OVERRIDE', api);
+    if (ws!=null)  sessionStorage.setItem('WS_BASE_OVERRIDE', ws);
+  }
+  function clearOverride(){
+    sessionStorage.removeItem('API_BASE_OVERRIDE');
+    sessionStorage.removeItem('WS_BASE_OVERRIDE');
+  }
+  function refreshFields(){
+    const { api, ws } = readOverride();
+    apiI.value = api; wsI.value = ws;
+    note.textContent = 'Aktiv: ' + api + ' / ' + ws;
+    window.API_BASE = api; window.WS_BASE = ws;
+  }
+
+  gear.onclick = () => { dlg.style.display = (dlg.style.display === 'none' ? 'block' : 'none'); refreshFields(); };
+  save.onclick = () => { writeOverride(apiI.value.trim(), wsI.value.trim()); refreshFields(); alert('Gespeichert.'); };
+  reset.onclick = () => { clearOverride(); refreshFields(); alert('Zurückgesetzt.'); };
+
+  // Initialize globals early
+  refreshFields();
+})();
+</script>
+
+</body>
+</html>
