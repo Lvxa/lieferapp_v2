@@ -73,7 +73,7 @@ if (oldSchlossUser && !existingTribueneUser) {
   ensureUser('Tribüne', 'bude1');
 }
 
-// Sponsorenzelt: exakt die sieben vom Nutzer genannten kleinen Getränke, keine Kasse.
+// Sponsorenzelt: exakt die sieben genannten kleinen Getränke, keine Kasse.
 upsertStand({
   code: 'sponsorenzelt',
   name: 'Sponsorenzelt',
@@ -125,7 +125,7 @@ if (!server.includes('orderProfile: s.orderProfile || null')) {
 // Stand-specific assortment rules. This is enforced for both product listing and order creation.
 if (!server.includes('/* 2026 special tent order profiles */')) {
   const needle = `function canStandOrderProduct(stand, product) {\n  if (!stand || !product || product.orderEnabled === false) return false;\n`;
-  const replacement = `function canStandOrderProduct(stand, product) {\n  if (!stand || !product || product.orderEnabled === false) return false;\n  /* 2026 special tent order profiles */\n  const profile = stand.orderProfile || null;\n  if (profile === 'sponsor-small-softdrinks') {\n    return [13, 16, 19, 22, 27, 28, 29].includes(Number(product.id));\n  }\n  if (profile === 'teilnehmer-beer-and-1l') {\n    const category = String(product.category || '').toLowerCase();\n    const text = \\`${'${product.name || \'\'} ${product.package || \'\'}'}\\`;\n    return category.startsWith('bier') || /\\b1\\s*l\\b/i.test(text);\n  }\n`;
+  const replacement = `function canStandOrderProduct(stand, product) {\n  if (!stand || !product || product.orderEnabled === false) return false;\n  /* 2026 special tent order profiles */\n  const profile = stand.orderProfile || null;\n  if (profile === 'sponsor-small-softdrinks') {\n    return [13, 16, 19, 22, 27, 28, 29].includes(Number(product.id));\n  }\n  if (profile === 'teilnehmer-beer-and-1l') {\n    const category = String(product.category || '').toLowerCase();\n    const text = String(product.name || '') + ' ' + String(product.package || '');\n    return category.startsWith('bier') || /\\b1\\s*l\\b/i.test(text);\n  }\n`;
   if (!server.includes(needle)) throw new Error('canStandOrderProduct-Start nicht gefunden; server.js wurde nicht verändert.');
   server = server.replace(needle, replacement);
 }
